@@ -13,11 +13,9 @@ git clone <URL_DU_DEPOT>
 cd <REPERTOIRE_DU_DEPOT>
 ```
 
-2. Installer les dépendances Python (idéalement dans un environnement virtuel) :
+2. Dépendances
 
-```bash
-pip install lxml google-cloud-translate
-```
+- module lxml
 
 > ⚠️ Il est nécessaire de configurer un compte Google Cloud pour utiliser le module `translate`.
 > Vous pouvez remplacer la fonction de traduction par une autre si vous le souhaitez.
