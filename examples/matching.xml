@@ -10,7 +10,7 @@
 	<question type="matching">
 		<name><text>cut_c_matching</text></name>
 		<questiontext format="html">
-			<text><![CDATA[Associer la commande de filtre avec son résultat lorsque <tt>chaine="eefhe"</tt>.]]></text>
+		    <text><![CDATA[Associer la commande de filtre avec son résultat lorsque <tt>chaine="eefhe"</tt>.]]></text>
 		</questiontext>
 		<generalfeedback format="html"><text><![CDATA[Merci d'avoir pris le temps de répondre à cette question.]]></text></generalfeedback>
 		<defaultgrade>1.0000000</defaultgrade>

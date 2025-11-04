@@ -6,7 +6,7 @@
 		<info format="html"><text></text></info>
 		<idnumber></idnumber>
 	</question>
-	<!-- question: gentestmoodle.py  -->
+    <!-- question: gentestmoodle.py  -->
 	<question type="coderunner">
 		<name><text>Exemple de question coderunner (python)</text></name>
 		<questiontext format="html">
