@@ -1,60 +1,72 @@
 # xml2xml
 
-`xml2xml` est un script Python permettant de traduire automatiquement des fichiers XML, en ciblant certains tags définis par type de question. Il utilise le module `lxml` pour manipuler les fichiers XML et `translate` de Google Cloud pour la traduction.
+`xml2xml` est un outil en ligne de commande écrit en Python permettant 
+de **traduire automatiquement des fichiers XML Moodle** 
+(par exemple des banques de questions) en ciblant des balises spécifiques 
+selon le type de question.  
+Il s'appuie sur le module [`lxml`](https://lxml.de/) pour la manipulation 
+des fichiers XML et sur l'API 
+[`google-cloud-translate`](https://cloud.google.com/translate/docs) pour la traduction automatique.
+
+Ce dépôt inclut également un utilitaire complémentaire, 
+[`merge_xml`](#merge_xml), pour fusionner plusieurs fichiers XML traduits ou non en un seul 
+au sein d'une arborescence de fichiers.
 
 ---
 
 ## Installation
 
-1. Cloner le dépôt :
+1. **Cloner le dépôt**
 
 ```bash
 git clone <URL_DU_DEPOT>
 cd <REPERTOIRE_DU_DEPOT>
 ```
 
-2. Dépendances
 
-- module lxml
+## Dépendances 
 
-> ⚠️ Il est nécessaire de configurer un compte Google Cloud pour utiliser le module `translate`.
-> Vous pouvez remplacer la fonction de traduction par une autre si vous le souhaitez.
+> ⚠️ L'utilisation de la fonction `translate_text()` nécessite une configuration valide du SDK Google Cloud.  
+> Vous pouvez remplacer cette fonction par un autre service de traduction si vous le souhaitez (DeepL, LibreTranslate, etc.).
 
 ---
 
 ## Utilisation
 
-### Traduire un ensemble de fichiers
+### Traduction de fichiers XML
 
-Par défaut, les fichiers traduits sont générés dans le répertoire courant. Pour traduire plusieurs fichiers XML :
+Pour traduire un ou plusieurs fichiers XML :
 
 ```bash
 python3 bin/xml2xml.py -i examples/*.xml
 ```
 
+Par défaut, les fichiers traduits sont enregistrés dans le répertoire courant.
+
 Exemple de sortie :
 
 ```
-examples/coderunner.xml -> ./coderunner_en.xml
-examples/matching.xml -> ./matching_en.xml
-examples/multichoice.xml -> ./multichoice_en.xml
-examples/numerical.xml -> ./numerical_en.xml
-examples/shortanswer.xml -> ./shortanswer_en.xml
+examples/coderunner.xml    -> ./coderunner_en.xml
+examples/matching.xml      -> ./matching_en.xml
+examples/multichoice.xml   -> ./multichoice_en.xml
+examples/numerical.xml     -> ./numerical_en.xml
+examples/shortanswer.xml   -> ./shortanswer_en.xml
 ```
 
 ### Définir un répertoire de sortie
 
-Vous pouvez préciser un répertoire de sortie avec l'option `-o` :
+Il est possible de spécifier un dossier de sortie à l'aide de l'option `-o` :
 
 ```bash
-python3 bin/xml2xml.py -i examples/*.xml -o output/
+python3 bin/xml2xml.py -i examples/*.xml -o translations/
 ```
 
 ---
 
 ## Tags traduisibles
 
-Le script traduit uniquement certains tags principaux selon le type de question. La configuration est définie dans le dictionnaire `tags_a_traduire_par_type` :
+Le script traduit uniquement certains tags selon le type de question Moodle.  
+Ces règles sont définies dans le dictionnaire `tags_a_traduire_par_type` du fichier `xml2xml.py` :
 
 ```python
 tags_a_traduire_par_type = {
@@ -67,30 +79,60 @@ tags_a_traduire_par_type = {
 }
 ```
 
-> 🔹 Pour l’instant, le script **ne traduit pas les réponses**, seulement les tags principaux.
-> 🔹 Le dictionnaire permet de contrôler quels tags seront traduits.
+> 🔹 Le script **ne traduit pas les réponses**, uniquement les intitulés, énoncés et feedbacks.  
+> 🔹 Le dictionnaire peut être modifié pour adapter la traduction à d'autres balises.
 
 ---
 
-## Remarques
+## merge_xml
 
-* Le script est une première version rapide, mais fonctionne déjà pour un cas d’usage réel.
-* L'objectif est d'utiliser `xml2xml` pour automatiser la traduction de questions dans des module d'enseignement réel, 
-  puis de continuer le développement pour plus de flexibilité.
+Le dépôt contient également un second script : **`merge_xml.py`**.  
+Il permet de **fusionner plusieurs fichiers XML Moodle** 
+(par exemple ceux traduits avec `xml2xml`) en un seul fichier prêt à être importé dans Moodle.
 
----
-
-## Exemple de commande complète
+### Exemple d'utilisation
 
 ```bash
-python3 bin/xml2xml.py -i examples/*.xml -o translations/
+python3 bin/merge_xml.py <repertoire>
 ```
 
-Cette commande traduit tous les fichiers XML du répertoire `examples/` et enregistre les fichiers traduits dans `translations/`.
+Le script parcourt récursivement le répertoire indiqué, 
+fusionne tous les fichiers XML qu'il contient, et crée un fichier `<repertoire>.xml` en chaque noeud.  
+Chaque fichier est intégré à l'intérieur d'une balise `<quiz>...</quiz>` complète.
 
 ---
 
-## Contribution
+## Exemple de workflow complet
 
-N'hésitez pas à proposer des améliorations ou à adapter la fonction de traduction si vous utilisez un service différent de Google Cloud.
+1. **Traduire tous les fichiers XML**
+
+```bash
+python3 bin/xml2xml.py -i examples/*.xml -o translated/
+```
+
+2. **Fusionner les fichiers traduits**
+
+```bash
+python3 bin/merge_xml.py translated/
+```
+
+Résultat : un fichier unique `translated.xml` contenant l'ensemble des questions traduites, prêt pour l'import Moodle.
+
+---
+
+## TODO 
+
+Les contributions sont les bienvenues.  
+Axes d'amélioration possibles :
+
+- Détection automatique des balises à traduire  
+- Gestion plus fine des CDATA et encodages  
+- Support d'autres API de traduction  
+- Ajout d'options CLI (choix de langue, etc.)
+
+---
+
+## Licence
+
+Ce projet est distribué sous licence libre (voir le fichier `LICENSE` pour plus de détails).
 
