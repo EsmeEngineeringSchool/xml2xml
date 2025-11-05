@@ -21,13 +21,12 @@ partial_feedbacks=["//correctfeedback/text",
 # les tags qui ont des CDATA
 with_cdata=["//questiontext/text"]
 # dictionnaire qui regroupe les tags par type
-tags_a_traduire_par_type={ "coderunner"  : question_tags + general_feedback,
-                           "matching"    : question_tags + general_feedback + partial_feedbacks,
-                           "multichoice" : question_tags + general_feedback + partial_feedbacks,
-                           "shortanswer" : question_tags + general_feedback + partial_feedbacks,
-                           "numerical"   : question_tags + general_feedback,
-                           "category"    : category_tags }
-
+tags_a_traduire_par_type={"coderunner"  : question_tags + general_feedback,
+                          "matching"    : question_tags + general_feedback + partial_feedbacks,
+                          "multichoice" : question_tags + general_feedback + partial_feedbacks,
+                          "shortanswer" : question_tags + general_feedback + partial_feedbacks,
+                          "numerical"   : question_tags + general_feedback,
+                          "category"    : category_tags }
 #--------------------------------------------------------------------------------------------------
 # choisir parmi les 'engines' disponible pour la traduction
 def translate_text(target,text,engine):
@@ -38,6 +37,7 @@ def translate_text(target,text,engine):
         case "libretranslate" : 
             return translate_text_libretranslate(target,text)
 #--------------------------------------------------------------------------------------------------
+# requete en local avec translate
 def translate_text_libretranslate(target,text,url="http://localhost:5000/translate"):
     data = {
     "q": text,
@@ -56,7 +56,7 @@ def translate_text_google_cloud(target: str, text: str) -> dict:
     translate_client = translate.Client()
     if isinstance(text, bytes):
         text = text.decode("utf-8")
-    result = translate_client.translate(text, target_language=target)
+    result = translate_client.translate(text, target_language=target,format_ ="text")
     return html.unescape(result["translatedText"])
 #--------------------------------------------------------------------------------------------------
 def translate_xml(file,target,outpath,engine):
