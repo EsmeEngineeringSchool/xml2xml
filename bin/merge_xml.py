@@ -31,8 +31,8 @@ def test_extension(filename,extension=".xml"):
 
 # parcours en profondeur !
 def merge_xml_in_directory(root):
-    if len(lsdir(root)) == 0 :
-        return 
+    #if len(lsdir(root)) == 0 :
+    #    return 
     for subdir in lsdir(root):
         merge_xml_in_directory(f"{root}/{subdir}")
     basename = root.split("/")[-1]
@@ -44,7 +44,6 @@ def merge_xml_in_directory(root):
         f.write(merge_xml_files(root,lsxml(root)))
 
 if __name__ == "__main__":
-
     assert len(sys.argv) > 1, f"Usage: {sys.argv[0]} <dir>"
     root = sys.argv[1].replace("/","")
     merge_xml_in_directory(root)
