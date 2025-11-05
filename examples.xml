@@ -2,7 +2,7 @@
 <quiz>
 	<!-- question: gentestmoodle.py  -->
 	<question type="category">
-		<category><text>Exemple de type numerical</text></category>
+		<category><text>Tous les Exemples de xml2xml/Exemple de type numerical</text></category>
 		<info format="html"><text></text></info>
 		<idnumber></idnumber>
 	</question>
@@ -41,7 +41,7 @@ Donner votre réponse sous forme numérique (exemple: 777)]]></text>
 		</tags>
 	</question>
 	<question type="category">
-		<category><text>Exemple de type coderunner</text></category>
+        <category><text>Tous les Exemples de xml2xml/Exemple de type coderunner</text></category>
 		<info format="html"><text></text></info>
 		<idnumber></idnumber>
 	</question>
@@ -153,7 +153,7 @@ z = root(f,2)['x'][0]]]>
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="category">
-		<category><text>Exemple de type matching</text></category>
+		<category><text>Tous les Exemples de xml2xml/Exemple de type matching</text></category>
 		<info format="html"><text></text></info>
 		<idnumber></idnumber>
 	</question>
@@ -224,7 +224,7 @@ z = root(f,2)['x'][0]]]>
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="category">
-		<category><text>Exemple de type multichoice</text></category>
+		<category><text>Tous les Exemples de xml2xml/Exemple de type multichoice</text></category>
 		<info format="html"><text></text></info>
 		<idnumber></idnumber>
 	</question>
@@ -293,7 +293,7 @@ z = root(f,2)['x'][0]]]>
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="category">
-		<category><text>Exemple de type shortanswer</text></category>
+		<category><text>Tous les Exemples de xml2xml/Exemple de type shortanswer</text></category>
 		<info format="html"><text></text></info>
 		<idnumber></idnumber>
 	</question>
