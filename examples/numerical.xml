@@ -2,7 +2,7 @@
 <quiz>
 	<!-- question: gentestmoodle.py  -->
 	<question type="category">
-		<category><text>Tous les exemples de xml2xml</text></category>
+		<category><text>Tous les Exemples de xml2xml/Exemple de type numerical</text></category>
 		<info format="html"><text></text></info>
 		<idnumber></idnumber>
 	</question>

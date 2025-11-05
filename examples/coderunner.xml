@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-	<!-- question: gentestmoodle.py  -->
 	<question type="category">
-		<category><text>Tous les exemples de xml2xml</text></category>
+        <category><text>Tous les Exemples de xml2xml/Exemple de type coderunner</text></category>
 		<info format="html"><text></text></info>
 		<idnumber></idnumber>
 	</question>
     <!-- question: gentestmoodle.py  -->
 	<question type="coderunner">
-		<name><text>Exemple de question coderunner (python)</text></name>
+		<name><text>Calcul du zéro d'une fonction avec Scipy</text></name>
 		<questiontext format="html">
 			<text><![CDATA[Dans une variable nommée \(z\), stocker un zéro de la fonction \(f\) ci-dessous, à l'aide de la librairie scipy.]]></text>
 		</questiontext>
