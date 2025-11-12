@@ -18,6 +18,20 @@ Ce dépôt inclut également un utilitaire complémentaire [`merge_xml`](#merge_
 
 ## Utilisation
 
+### help :
+```bash
+bin/xml2xml.py -h
+usage: xml2xml.py [-h] -i INPUT [INPUT ...] [-o [OUTPATH]] [-g] [-l] [-t [TARGET]]
+
+options:
+  -h, --help                                       show this help message and exit
+  -i INPUT [INPUT ...], --input INPUT [INPUT ...]  input files (on single or a set)
+  -o [OUTPATH], --outpath [OUTPATH]                output path
+  -g, --google_cloud                               utiliser l'api translate de google-cloud
+  -l, --libretranslate                             utiliser l'api de libretranslate
+  -t [TARGET], --target [TARGET]                   langue cible de la traduction
+```
+
 ### Traduire un ou plusieurs fichiers XML
 
 ```bash
