@@ -16,7 +16,7 @@ Ce dépôt inclut également un utilitaire complémentaire [`merge_xml`](#merge_
 
 ---
 
-## 🚀 Utilisation
+## Utilisation
 
 ### Traduire un ou plusieurs fichiers XML
 
