@@ -20,7 +20,7 @@ Ce dépôt inclut également un utilitaire complémentaire [`merge_xml`](#merge_
 
 ### help :
 ```bash
-bin/xml2xml.py -h
+xml2xml.py -h
 usage: xml2xml.py [-h] -i INPUT [INPUT ...] [-o [OUTPATH]] [-g] [-l] [-t [TARGET]]
 
 options:
@@ -35,7 +35,7 @@ options:
 ### Traduire un ou plusieurs fichiers XML
 
 ```bash
-python3 bin/xml2xml.py -i examples/*.xml
+xml2xml.py -i examples/*.xml
 ```
 
 Par défaut :
@@ -58,7 +58,7 @@ examples/shortanswer.xml   -> ./shortanswer_en.xml
 ### Définir la langue cible
 
 ```bash
-python3 bin/xml2xml.py -i examples/*.xml -t pt
+xml2xml.py -i examples/*.xml -t pt
 ```
 
 Traduit les fichiers XML vers le **portugais**.
@@ -70,7 +70,7 @@ Traduit les fichiers XML vers le **portugais**.
 #### Utiliser LibreTranslate (par défaut)
 
 ```bash
-python3 bin/xml2xml.py -i examples/*.xml -l
+xml2xml.py -i examples/*.xml -l
 ```
 
 LibreTranslate doit être accessible localement sur :
@@ -82,7 +82,7 @@ http://localhost:5000/translate
 #### Utiliser Google Cloud Translate
 
 ```bash
-python3 bin/xml2xml.py -i examples/*.xml -g
+xml2xml.py -i examples/*.xml -g
 ```
 
 Cette option nécessite que ton environnement Google Cloud soit configuré correctement.
@@ -91,7 +91,7 @@ Cette option nécessite que ton environnement Google Cloud soit configuré corre
 ### Définir un répertoire de sortie
 
 ```bash
-python3 bin/xml2xml.py -i examples/*.xml -o translations/
+xml2xml.py -i examples/*.xml -o translations/
 ```
 
 Tous les fichiers traduits seront créés dans le dossier `translations/`.
@@ -103,7 +103,7 @@ Tous les fichiers traduits seront créés dans le dossier `translations/`.
 Tu peux enrichir la liste des **balises à traduire** en fournissant un fichier via `--config` :
 
 ```bash
-python3 bin/xml2xml.py -i examples/*.xml -c extra_tags
+xml2xml.py -i examples/*.xml -c extra_tags
 ```
 
 Chaque ligne du fichier doit contenir un **XPath** vers un tag supplémentaire à traduire, par exemple :
@@ -146,7 +146,7 @@ Il permet de **fusionner plusieurs fichiers XML Moodle** (traduit ou non) en un 
 ### Exemple d'utilisation
 
 ```bash
-python3 bin/merge_xml.py <repertoire>
+merge_xml.py <repertoire>
 ```
 
 Le script parcourt récursivement le répertoire indiqué, fusionne tous les fichiers XML qu'il contient et crée un fichier `<repertoire>.xml` à la racine.  
