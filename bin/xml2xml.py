@@ -20,11 +20,13 @@ partial_feedbacks=["//correctfeedback/text",
                    "//incorrectfeedback/text"]
 # les tags qui ont des CDATA
 with_cdata=["//questiontext/text"]
+
 # dictionnaire qui regroupe les tags par type
 tags_a_traduire_par_type={"coderunner"  : question_tags + general_feedback,
                           "matching"    : question_tags + general_feedback + partial_feedbacks,
                           "multichoice" : question_tags + general_feedback + partial_feedbacks,
                           "shortanswer" : question_tags + general_feedback + partial_feedbacks,
+                          "shortanswerwiris" : question_tags + general_feedback,
                           "numerical"   : question_tags + general_feedback,
                           "category"    : category_tags }
 #--------------------------------------------------------------------------------------------------
@@ -42,6 +44,7 @@ def translate_text_libretranslate(target,text,url="http://localhost:5000/transla
     data = {
     "q": text,
     "source": "fr",
+    "format": "text",
     "target": target}
     response = requests.post(url, data=data)
     response.raise_for_status()
@@ -59,16 +62,19 @@ def translate_text_google_cloud(target: str, text: str) -> dict:
     result = translate_client.translate(text, target_language=target,format_ ="text")
     return html.unescape(result["translatedText"])
 #--------------------------------------------------------------------------------------------------
-def translate_xml(file,target,outpath,engine):
+def translate_xml(file,target,outpath,engine,tags_a_traduire):
     fileout=outpath+os.path.basename(file.name).replace(".xml","_en.xml")
     print(f"{file.name} -> {fileout}",file=sys.stderr)
     tree = etree.parse(file, parser)
     root = tree.getroot()
     # parcourir toutes les questions
+    k=0
     for question in root.findall(".//question"):
+        k+=1
+        print(f"question {k}")
         qtype = question.get("type")
         # tag par type 
-        for tag in tags_a_traduire_par_type[qtype] : 
+        for tag in tags_a_traduire[qtype] : 
             for t in root.xpath(tag):
                 if t.text:
                     translated=translate_text(target,t.text,engine)
@@ -81,15 +87,17 @@ def dir_path(path):
 def parsing_command_line():
     import os
     ENGINES=["google_cloud","libretranslate"]
-    parser = argparse.ArgumentParser()
+    formatter = lambda prog: argparse.HelpFormatter(prog,max_help_position=52)
+    parser = argparse.ArgumentParser(formatter_class=formatter)
+    parser.add_argument('-t','--target', nargs="?", default="en", help='langue cible de la traduction : en, pt, es')
     parser.add_argument('-i','--input', nargs='+', type=argparse.FileType('r'),
                         default=sys.stdin,help='input files (on single or a set)',required=True)
     parser.add_argument('-o','--outpath', nargs='?', type=dir_path, default='./', help='output path')
+    parser.add_argument('-c','--config', nargs='?', type=argparse.FileType('r'), help='configuration file')
     parser.add_argument('-g','--google_cloud',   action='store_true', default=False, 
                          help='utiliser l\'api translate de google-cloud')
     parser.add_argument('-l','--libretranslate', action='store_true', default=False,
                          help='utiliser l\'api de libretranslate')
-    parser.add_argument('-t','--target', nargs="?", default="en", help='langue cible de la traduction')
     args = parser.parse_args()
     engine = next((name for name in ENGINES if getattr(args, name)), None)
     setattr(args, "engine", engine)
@@ -98,6 +106,14 @@ def parsing_command_line():
 #--------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
     args = parsing_command_line()
+    f=args.config
+    tags_from_config_file=[]
+    if f :
+        tags_from_config_file=f.readlines()
     parser = etree.XMLParser(strip_cdata=False, remove_comments=False)
     for file in args.input :
-        translate_xml(file,target=args.target,outpath=args.outpath,engine=args.engine)
+        tags_a_traduire={}
+        for qtype in tags_a_traduire_par_type.keys() :
+            tags_a_traduire[qtype]=tags_a_traduire_par_type[qtype]+tags_from_config_file
+            print(
+        translate_xml(file,target=args.target,outpath=args.outpath,engine=args.engine,tags_a_traduire=tags_a_traduire)
