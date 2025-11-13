@@ -32,7 +32,6 @@ tags_a_traduire_par_type={"coderunner"  : question_tags + general_feedback,
 #--------------------------------------------------------------------------------------------------
 # choisir parmi les 'engines' disponible pour la traduction
 def translate_text(target,text,engine):
-    engine = engine or "google_cloud"
     match engine :
         case "google_cloud" :
             return translate_text_google_cloud(target,text)
@@ -138,7 +137,7 @@ def parsing_command_line():
                         default=sys.stdin,help='input files (on single or a set)',required=True)
     parser.add_argument('-o','--outpath', nargs='?', type=dir_path, default='./', help='output path')
     parser.add_argument('-c','--config', nargs='?', type=argparse.FileType('r'), help='configuration file')
-    parser.add_argument('-g','--google_cloud',   action='store_true', default=False, 
+    parser.add_argument('-g','--google_cloud',   action='store_true', default=True, 
                          help='utiliser l\'api translate de google-cloud')
     parser.add_argument('-l','--libretranslate', action='store_true', default=False,
                          help='utiliser l\'api de libretranslate')
