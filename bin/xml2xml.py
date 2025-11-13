@@ -65,7 +65,9 @@ def translate_xml(file,target,outpath,engine,tags_config):
     tags_a_traduire={}
     string_translated_once={}
     for qtype in tags_a_traduire_par_type.keys() :
-        tags_a_traduire[qtype]=tags_a_traduire_par_type[qtype]+tags_config["translate"]
+        tags_a_traduire[qtype]=tags_a_traduire_par_type[qtype]
+        if "translate" in tags_config :
+            tags_a_traduire[qtype]+=tags_config["translate"]
         for tag in tags_a_traduire[qtype] :
             string_translated_once[tag]=None
 
@@ -86,11 +88,15 @@ def translate_xml(file,target,outpath,engine,tags_config):
                         translated=translate_text(target,t.text,engine)
                         t.text = etree.CDATA(translated) if tag in with_cdata else translated
                         string_translated_once[tag]=translated
-                        print(f"q.{k} {qtype} {tag.lstrip('/')} translated -> {translated}")
+                        print(f"q.{k} {qtype} {tag.lstrip('/')} translated -> {translated[:50]}",end='')
+                        if len(translated) > 50 : print("...",end="")
+                        print()
                 else:
                     if t.text:
                         t.text = string_translated_once[tag]
-                        print(f"q.{k} {qtype} {tag.lstrip('/')} already translated -> {string_translated_once[tag]}")
+                        print(f"q.{k} {qtype} {tag.lstrip('/')} already translated -> {string_translated_once[tag][:50]}",end='')
+                        if len(string_translated_once[tag]) > 50 : print("...",end='')
+                        print()
 
     tree.write(fileout, encoding="UTF-8", xml_declaration=True, pretty_print=False)
 #--------------------------------------------------------------------------------------------------
@@ -105,6 +111,7 @@ def translate_xml(file,target,outpath,engine,tags_config):
 def load_tag_config(configfile):
     config = {"translate": [], "translate_once": []}
     current_section = None
+    if configfile is None : return config 
     # lecture ligne par ligne
     for line in configfile:
         line = line.strip()
@@ -150,8 +157,7 @@ def parsing_command_line():
 if __name__ == "__main__":
     args = parsing_command_line()
     f=args.config
-    tags_from_config_file=load_tag_config(args.config)
-    print(f"reading config file : {args.config.name}")
+    tags_from_config_file=load_tag_config(f)
     parser = etree.XMLParser(strip_cdata=False, remove_comments=False)
     for file in args.input :
         translate_xml(file,target=args.target,outpath=args.outpath,engine=args.engine,tags_config=tags_from_config_file)
