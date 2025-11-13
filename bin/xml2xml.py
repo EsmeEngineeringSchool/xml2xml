@@ -62,7 +62,14 @@ def translate_text_google_cloud(target: str, text: str) -> dict:
     result = translate_client.translate(text, target_language=target,format_ ="html")
     return html.unescape(result["translatedText"])
 #--------------------------------------------------------------------------------------------------
-def translate_xml(file,target,outpath,engine,tags_a_traduire):
+def translate_xml(file,target,outpath,engine,tags_config):
+    tags_a_traduire={}
+    string_translated_once={}
+    for qtype in tags_a_traduire_par_type.keys() :
+        tags_a_traduire[qtype]=tags_a_traduire_par_type[qtype]+tags_config["translate"]
+        for tag in tags_a_traduire[qtype] :
+            string_translated_once[tag]=None
+
     fileout=outpath+os.path.basename(file.name).replace(".xml","_en.xml")
     print(f"{file.name} -> {fileout}",file=sys.stderr)
     tree = etree.parse(file, parser)
@@ -75,11 +82,48 @@ def translate_xml(file,target,outpath,engine,tags_a_traduire):
         # tag par type 
         for tag in tags_a_traduire[qtype] : 
             for t in question.xpath(tag.lstrip('/')):
-                if t.text:
-                    translated=translate_text(target,t.text,engine)
-                    t.text = etree.CDATA(translated) if tag in with_cdata else translated
-                    print(f"question {k} {qtype} {tag.lstrip('/')} translated")
+                if tag not in tags_config["translate_once"] or string_translated_once[tag] is None :
+                    if t.text:
+                        translated=translate_text(target,t.text,engine)
+                        t.text = etree.CDATA(translated) if tag in with_cdata else translated
+                        string_translated_once[tag]=translated
+                        print(f"q.{k} {qtype} {tag.lstrip('/')} translated -> {translated}")
+                else:
+                    if t.text:
+                        t.text = string_translated_once[tag]
+                        print(f"q.{k} {qtype} {tag.lstrip('/')} already translated -> {string_translated_once[tag]}")
+
     tree.write(fileout, encoding="UTF-8", xml_declaration=True, pretty_print=False)
+#--------------------------------------------------------------------------------------------------
+# lecture du fichier de configuration 
+# # [translate]
+#   //tag1
+#   //tag2
+#
+# # [translate_once]
+#   //tagA
+#   //tagB
+def load_tag_config(configfile):
+    config = {"translate": [], "translate_once": []}
+    current_section = None
+    # lecture ligne par ligne
+    for line in configfile:
+        line = line.strip()
+
+        # si une ligne de commentaire et pas une ligne de section
+        if not line or line.startswith("#") and not line.startswith("# ["): continue
+
+        # si une ligne de section on définit current_section 
+        if line.startswith("# [") and line.endswith("]"):
+            current_section = line[3:-1].strip()
+            continue
+        # si pas dans une section -> erreur
+        if current_section is None:
+            raise ValueError(f"Ligne hors section détectée : {line}")
+        else:
+            config[current_section].append(line)
+
+    return config
 #--------------------------------------------------------------------------------------------------
 def dir_path(path):
     return path if os.path.isdir(path) else argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
@@ -107,12 +151,8 @@ def parsing_command_line():
 if __name__ == "__main__":
     args = parsing_command_line()
     f=args.config
-    tags_from_config_file=[]
-    if f :
-        tags_from_config_file=f.read().splitlines()
+    tags_from_config_file=load_tag_config(args.config)
+    print(f"reading config file : {args.config.name}")
     parser = etree.XMLParser(strip_cdata=False, remove_comments=False)
     for file in args.input :
-        tags_a_traduire={}
-        for qtype in tags_a_traduire_par_type.keys() :
-            tags_a_traduire[qtype]=tags_a_traduire_par_type[qtype]+tags_from_config_file
-        translate_xml(file,target=args.target,outpath=args.outpath,engine=args.engine,tags_a_traduire=tags_a_traduire)
+        translate_xml(file,target=args.target,outpath=args.outpath,engine=args.engine,tags_config=tags_from_config_file)
