@@ -12,7 +12,8 @@ Ce dépôt inclut également un utilitaire complémentaire [`merge_xml`](#merge_
 
 ---
 > ATTENTION: L'utilisation de l'API Google Cloud nécessite une configuration valide du SDK (clé d'API et variable d'environnement `GOOGLE_APPLICATION_CREDENTIALS`).  
-> Si aucun moteur n'est spécifié, `xml2xml` utilisera **LibreTranslate** par défaut (attendu sur `http://localhost:5000/translate`).
+> **LibreTranslate** doit être lancé et attendu sur `http://localhost:5000/translate`.
+> Si aucun moteur n'est spécifié, `xml2xml` utilisera **Google Cloud Translate** par défaut.
 
 ---
 
@@ -67,10 +68,14 @@ Traduit les fichiers XML vers le **portugais**.
 
 ### Spécifier le moteur de traduction
 
-#### Utiliser LibreTranslate (par défaut)
+#### Utiliser LibreTranslate 
 
 ```bash
 xml2xml.py -i examples/*.xml -l
+```
+ou
+```bash
+xml2xml.py -i examples/*.xml --libretranslate
 ```
 
 LibreTranslate doit être accessible localement sur :
@@ -79,13 +84,18 @@ LibreTranslate doit être accessible localement sur :
 http://localhost:5000/translate
 ```
 
-#### Utiliser Google Cloud Translate
+#### Utiliser Google Cloud Translate (par défaut)
 
 ```bash
 xml2xml.py -i examples/*.xml -g
 ```
+ou
+```bash
+xml2xml.py -i examples/*.xml --google_cloud
+```
 
-Cette option nécessite que ton environnement Google Cloud soit configuré correctement.
+
+Cette option nécessite que l'environnement Google Cloud soit configuré correctement.
 
 ---
 ### Définir un répertoire de sortie
@@ -100,17 +110,23 @@ Tous les fichiers traduits seront créés dans le dossier `translations/`.
 
 ### Fichier de configuration
 
-Tu peux enrichir la liste des **balises à traduire** en fournissant un fichier via `--config` :
+Vous pouvez enrichir la liste des **balises à traduire** ou à ne traduire qu'une seule fois
+en fournissant un fichier via `--config` ou `-c`:
 
 ```bash
-xml2xml.py -i examples/*.xml -c extra_tags
+xml2xml.py -i examples/*.xml -c tags.conf
 ```
 
-Chaque ligne du fichier doit contenir un **XPath** vers un tag supplémentaire à traduire, par exemple :
+Le fichier comporte des sections et pour chaque ligne définit après la section
+doit contenir un **XPath** vers un tag, par exemple :
 
 ```
-//answers/text
-//answer/feedback
+# [ translate ]
+//answer/text
+# [ translate_once ]
+//correctfeedback/text
+//partiallycorrectfeedback/text
+//incorrectfeedback/text
 ```
 
 ---
