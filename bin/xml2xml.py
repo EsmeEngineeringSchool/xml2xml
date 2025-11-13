@@ -19,7 +19,7 @@ partial_feedbacks=["//correctfeedback/text",
                    "//partiallycorrectfeedback/text",
                    "//incorrectfeedback/text"]
 # les tags qui ont des CDATA
-with_cdata=["//questiontext/text"]
+with_cdata=["//questiontext/text","//answer/text"]
 
 # dictionnaire qui regroupe les tags par type
 tags_a_traduire_par_type={"coderunner"  : question_tags + general_feedback,
@@ -59,7 +59,7 @@ def translate_text_google_cloud(target: str, text: str) -> dict:
     translate_client = translate.Client()
     if isinstance(text, bytes):
         text = text.decode("utf-8")
-    result = translate_client.translate(text, target_language=target,format_ ="text")
+    result = translate_client.translate(text, target_language=target,format_ ="html")
     return html.unescape(result["translatedText"])
 #--------------------------------------------------------------------------------------------------
 def translate_xml(file,target,outpath,engine,tags_a_traduire):
@@ -71,14 +71,14 @@ def translate_xml(file,target,outpath,engine,tags_a_traduire):
     k=0
     for question in root.findall(".//question"):
         k+=1
-        print(f"question {k}")
         qtype = question.get("type")
         # tag par type 
         for tag in tags_a_traduire[qtype] : 
-            for t in root.xpath(tag):
+            for t in question.xpath(tag.lstrip('/')):
                 if t.text:
                     translated=translate_text(target,t.text,engine)
                     t.text = etree.CDATA(translated) if tag in with_cdata else translated
+                    print(f"question {k} {qtype} {tag.lstrip('/')} translated")
     tree.write(fileout, encoding="UTF-8", xml_declaration=True, pretty_print=False)
 #--------------------------------------------------------------------------------------------------
 def dir_path(path):
@@ -109,11 +109,10 @@ if __name__ == "__main__":
     f=args.config
     tags_from_config_file=[]
     if f :
-        tags_from_config_file=f.readlines()
+        tags_from_config_file=f.read().splitlines()
     parser = etree.XMLParser(strip_cdata=False, remove_comments=False)
     for file in args.input :
         tags_a_traduire={}
         for qtype in tags_a_traduire_par_type.keys() :
             tags_a_traduire[qtype]=tags_a_traduire_par_type[qtype]+tags_from_config_file
-            print(
         translate_xml(file,target=args.target,outpath=args.outpath,engine=args.engine,tags_a_traduire=tags_a_traduire)
